@@ -1,0 +1,441 @@
+/* Register form styles */
+.password-box .register {
+  color: #b9bbbe;
+  font-size: 0.7em;
+  margin-top: 8px;
+}
+
+.password-box .register a {
+  color: #00c8ff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.password-box .register a:hover {
+  color: #00e5ff;
+}
+
+/* Styles for username and Gmail input validation */
+.input-group {
+  position: relative;
+}
+
+/* Disable underline animation for verification form */
+#verificationForm .input-group::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.username-taken {
+  border-bottom: 2px solid red !important;
+}
+
+.username-available {
+  border-bottom: 2px solid green !important;
+}
+
+.gmail-taken {
+  border-bottom: 2px solid red !important;
+}
+
+.gmail-available {
+  border-bottom: 2px solid green !important;
+}
+
+.gmail-invalid {
+  border-bottom: 2px solid yellow !important;
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.3) !important;
+}
+
+/* Gmail validation glow effects */
+.gmail-available {
+  border-bottom: 2px solid green !important;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3) !important;
+}
+
+.gmail-taken {
+  border-bottom: 2px solid red !important;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.3) !important;
+}
+
+.username-icon, .gmail-icon, .password-icon, .confirm-icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  display: none;
+}
+
+.username-taken-icon::before, .gmail-taken-icon::before, .password-invalid-icon::before, .confirm-invalid-icon::before {
+  content: '✖';
+  color: red;
+  display: block;
+}
+
+.username-available-icon::before, .gmail-available-icon::before, .password-valid-icon::before, .confirm-valid-icon::before {
+  content: '✔';
+  color: green;
+  display: block;
+}
+
+.gmail-invalid-icon::before {
+  content: '⚠';
+  color: yellow;
+  display: block;
+}
+
+.username-taken-icon, .username-available-icon, .gmail-taken-icon, .gmail-available-icon, .gmail-invalid-icon,
+.password-valid-icon, .password-invalid-icon, .confirm-valid-icon, .confirm-invalid-icon {
+  display: block;
+}
+
+/* Username and Email input base styles */
+#registerForm #registerUsername,
+#registerForm #registerGmail {
+  width: 100% !important;
+  padding: 12px 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(124, 191, 255, 0.3) !important;
+  color: #fff !important;
+  font-size: 16px !important;
+  transition: border-color 0.3s ease !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  outline: none !important;
+}
+
+/* Invalid state for username and email - multiple selectors for maximum coverage */
+.input-group.invalid #registerUsername,
+.input-group.invalid #registerGmail,
+#registerUsername.invalid,
+#registerGmail.invalid,
+#registerForm .input-group.invalid #registerUsername,
+#registerForm .input-group.invalid #registerGmail {
+  border-bottom-color: #f04747 !important;
+  border-bottom-width: 2px !important;
+  border-bottom-style: solid !important;
+}
+
+/* Valid state for username and email - more specific selectors */
+.input-group.valid #registerUsername,
+.input-group.valid #registerGmail,
+#registerForm .input-group.valid #registerUsername,
+#registerForm .input-group.valid #registerGmail,
+#registerUsername.valid,
+#registerGmail.valid {
+  border-bottom-color: #4caf50 !important;
+  border-bottom-width: 2px !important;
+  border-bottom-style: solid !important;
+}
+
+/* Ensure valid state overrides focus state */
+.input-group.valid #registerUsername:focus,
+.input-group.valid #registerGmail:focus,
+#registerForm .input-group.valid #registerUsername:focus,
+#registerForm .input-group.valid #registerGmail:focus {
+  border-bottom-color: #4caf50 !important;
+}
+
+/* Disable pseudo-element underlines for register form to prevent conflicts */
+#registerForm .input-group::after {
+  display: none !important;
+}
+
+/* Focus state for username and email */
+#registerForm #registerUsername:focus,
+#registerForm #registerGmail:focus {
+  border-bottom-color: #00c8ff !important;
+}
+
+/* AGGRESSIVE invalid state styling - this should definitely work */
+.input-group.invalid #registerUsername:focus,
+.input-group.invalid #registerUsername:not(:focus),
+.input-group.invalid #registerUsername,
+#registerUsername[class*="invalid"],
+body #registerForm .input-group.invalid #registerUsername {
+  border-bottom: 2px solid #f04747 !important;
+  box-shadow: none !important;
+}
+
+/* Same for email */
+.input-group.invalid #registerGmail:focus,
+.input-group.invalid #registerGmail:not(:focus),
+.input-group.invalid #registerGmail,
+#registerGmail[class*="invalid"],
+body #registerForm .input-group.invalid #registerGmail {
+  border-bottom: 2px solid #f04747 !important;
+  box-shadow: none !important;
+}
+
+/* Password input base styles */
+#registerForm #registerPassword,
+#registerForm #confirmPassword {
+  width: 100% !important;
+  padding: 12px 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(124, 191, 255, 0.3) !important;
+  color: #fff !important;
+  font-size: 16px !important;
+  transition: border-color 0.3s ease !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  outline: none !important;
+}
+
+/* Show default underline when focused */
+#registerForm #registerUsername:focus,
+#registerForm #registerGmail:focus,
+#registerForm #registerPassword:focus,
+#registerForm #confirmPassword:focus {
+  border-bottom-color: #00c8ff !important;
+}
+
+/* Password validation styles */
+#registerForm #registerPassword.password-valid,
+#registerForm #confirmPassword.confirm-valid {
+  border-bottom: 2px solid #4caf50 !important;
+  background-image: none !important;
+}
+
+#registerForm #registerPassword.password-invalid,
+#registerForm #confirmPassword.confirm-invalid {
+  border-bottom: 2px solid #f44336 !important;
+  background-image: none !important;
+}
+
+/* Hide default underline when typing and show validation */
+#registerForm #registerPassword:not(:placeholder-shown),
+#registerForm #confirmPassword:not(:placeholder-shown) {
+  border-bottom-color: transparent !important;
+}
+
+/* Show validation underline when typing */
+#registerForm #registerPassword:not(:placeholder-shown).password-valid,
+#registerForm #confirmPassword:not(:placeholder-shown).confirm-valid {
+  border-bottom-width: 2px !important;
+  border-bottom-style: solid !important;
+  border-bottom-color: #4caf50 !important;
+}
+
+#registerForm #registerPassword:not(:placeholder-shown).password-invalid,
+#registerForm #confirmPassword:not(:placeholder-shown).confirm-invalid {
+  border-bottom-width: 2px !important;
+  border-bottom-style: solid !important;
+  border-bottom-color: #f44336 !important;
+}
+
+/* Styles for verification form */
+#verificationForm {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 10px 20px 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#verificationForm .input-group {
+  width: 100%;
+  margin-bottom: 20px;
+  text-align: center;
+  position: relative;
+}
+
+#verificationForm label {
+  display: block;
+  color: #fff;
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  font-weight: bold;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.verification-code {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 20px 0;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Verification code input styles */
+#verificationForm .verification-code {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 10px !important;
+  margin: 0 auto 20px !important;
+  width: auto !important;
+  max-width: 100% !important;
+  padding: 0 10px !important;
+}
+
+#verificationForm .verification-code input[type="text"].verification-input {
+  width: 45px !important;
+  height: 60px !important;
+  text-align: center !important;
+  font-size: 24px !important;
+  font-weight: bold !important;
+  border: 2px solid #4a4a6a !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #fff !important;
+  transition: all 0.2s ease !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+}
+
+#verificationForm .verification-code input[type="text"].verification-input:focus {
+  border-color: #5865f2 !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3) !important;
+  transform: translateY(-2px) !important;
+}
+
+#verificationForm button[onclick="handleVerificationWithLoading()"] {
+  width: 100%;
+  padding: 12px;
+  margin: 0 0 15px 0;
+  background: #5865f2;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#verificationForm button[onclick="handleVerificationWithLoading()"]:hover {
+  background: #4752c4;
+}
+
+#verificationForm .register {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+#verificationForm .register a {
+  color: #a0a8ff;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  display: inline-block;
+  padding: 5px 0;
+}
+
+#verificationForm .register a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* Override underline styles for verification code inputs */
+#verificationForm .verification-code .code-input,
+#verificationForm .verification-code .code-input:focus {
+  border: 2px solid #4a4a6a !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: none !important;
+  background-image: none !important;
+  transition: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 50px !important;
+  width: 40px !important;
+  text-align: center !important;
+  font-size: 20px !important;
+  color: #fff !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+#verificationForm .verification-code .code-input:focus {
+  border-color: #5865f2 !important;
+  box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3) !important;
+  outline: none !important;
+}
+
+/* Hide any pseudo-elements that might be creating underlines */
+#verificationForm .verification-code .code-input::before,
+#verificationForm .verification-code .code-input::after,
+#verificationForm .verification-code .code-input::-webkit-inner-spin-button,
+#verificationForm .verification-code .code-input::-webkit-outer-spin-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+
+/* Completely remove Chrome autofill styling */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+#verificationForm .verification-code input[type="text"].code-input:-webkit-autofill {
+  -webkit-text-fill-color: inherit !important;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+  line-height: inherit !important;
+  caret-color: currentColor !important;
+}
+
+/* Remove any autofill background on inputs */
+input:-webkit-autofill::first-line,
+input:-webkit-autofill::placeholder,
+input:-webkit-autofill::selection {
+  color: inherit !important;
+  background-color: transparent !important;
+  font-size: inherit !important;
+}
+
+/* Remove autofill background in Firefox */
+input:autofill,
+input:autofill:hover,
+input:autofill:focus,
+input:autofill:active {
+  -webkit-text-fill-color: inherit !important;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: none !important;
+  transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+  line-height: inherit !important;
+  caret-color: currentColor !important;
+}
