@@ -1,0 +1,311 @@
+/* Form Container */
+#passwordContainer {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Form Box */
+.password-box {
+  background: rgba(30, 33, 58, 0.95);
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(124, 191, 255, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* App Logo */
+#passwordContainer .app-logo {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* Force logo size with maximum specificity */
+#passwordContainer .password-box .app-logo img,
+#passwordContainer .app-logo img {
+  width: 40px !important;
+  height: 40px !important;
+  margin-bottom: 5px;
+  object-fit: contain !important;
+  max-width: 40px !important;
+  max-height: 40px !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  -ms-transform: none !important;
+  -o-transform: none !important;
+}
+
+#passwordContainer .app-logo h2 {
+  color: #fff;
+  margin: 5px 0 0;
+  font-size: 1em !important;
+  font-weight: 600;
+  text-align: center !important;
+}
+
+/* Animation Container */
+#loginAnimationContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  pointer-events: none;
+  overflow: hidden;
+  background: transparent;
+}
+
+#loginAnimation {
+  position: relative;
+  z-index: 1001;
+  pointer-events: none;
+}
+
+/* Input Groups */
+.input-group {
+  margin-bottom: 24px;
+  position: relative;
+  width: 100%;
+}
+
+/* Forgot password container */
+.forgot-password-container {
+  position: absolute;
+  margin: -18px 0 15px 0;
+  padding-left: 5px;
+  text-align: left;
+  height: 0; /* Keeps it from affecting layout */
+}
+
+/* Style for the password input container */
+.password-input-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Input styles */
+.input-group input[type="text"],
+.input-group input[type="password"],
+.input-group input[type="email"] {
+  width: 100%;
+  padding: 12px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(124, 191, 255, 0.3);
+  border-radius: 0;
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+/* Focus styles */
+.input-group input:focus {
+  border-color: #5865f2;
+  box-shadow: 0 2px 0 0 #5865f2;
+  outline: none;
+}
+
+/* Label styles */
+.input-group label {
+  display: block;
+  color: #a0a8ff;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Label animation on focus or when input has value */
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: 0;
+  font-size: 10px;
+  transform: translateY(-50%);
+  color: #000000;
+}
+
+/* Placeholder styling */
+.input-group input::placeholder {
+  color: transparent;
+}
+
+.input-group input:focus::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Forgot password link styling */
+.forgot-password {
+  display: inline-block;
+  color: #7cbbff;
+  font-size: 12px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  padding: 4px 0;
+  position: relative;
+  left: -5px;
+}
+
+.forgot-password:hover {
+  color: #a0a8ff;
+  text-decoration: underline;
+}
+
+/* Buttons */
+.password-box button {
+  width: 100%;
+  padding: 14px;
+  background: #5865f2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.password-box button:hover {
+  background: #4752c4;
+}
+
+/* Form Footer Links */
+.register {
+  text-align: center;
+  margin-top: 20px;
+  color: #a0a8ff;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.register a {
+  color: #7cbbff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.register a:hover {
+  text-decoration: underline;
+}
+
+/* Forgot Password Link */
+.forgot-password {
+  display: block;
+  text-align: right;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #7cbbff;
+  text-decoration: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  position: absolute;
+  right: 0;
+  bottom: -20px;
+  z-index: 3;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* Prevent focus outline when clicking forgot password */
+.forgot-password:focus {
+  outline: none;
+}
+
+/* Forgot Password Overlay */
+#forgotPasswordOverlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 12, 40, 0.9);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.forgot-password-content {
+  background: #1e213a;
+  border-radius: 12px;
+  padding: 10px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(124, 191, 255, 0.1);
+}
+
+.forgot-password-content h3 {
+  color: #fff;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.4em;
+}
+
+.forgot-password-content p {
+  color: #e5eaff;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.forgot-password-content button {
+  background: #5865f2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.forgot-password-content button:hover {
+  background: #4752c4;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .password-box {
+    padding: 25px 20px;
+  }
+  
+  #passwordContainer .app-logo h2 {
+    font-size: 1em !important;
+  }
+  
+  #passwordContainer .app-logo img {
+    width: 40px !important;
+    height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+  }
+  
+  .forgot-password-content {
+    padding: 25px 20px;
+  }
+}

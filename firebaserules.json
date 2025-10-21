@@ -1,0 +1,57 @@
+{
+  "rules": {
+    "users": {
+      ".read": true,
+      ".indexOn": ["username", "lastLogin"],
+      "$uid": {
+        ".write": "auth != null && auth.uid == $uid",
+        "preferredStatus": {
+          ".write": "auth != null && auth.uid == $uid",
+          ".validate": "newData.isString() && (newData.val() === 'online' || newData.val() === 'idle' || newData.val() === 'dnd')"
+        }
+      }
+    },
+
+    "chats": {
+      ".read": true,
+      ".write": true,
+      ".comment": "Open access required - app uses custom authentication, not Firebase Auth",
+      "$chatId": {
+        "messages": {
+          ".indexOn": ["timestamp", "senderId"]
+        },
+        "typing": {
+          "$uid": {
+            ".validate": "newData.val() === true || newData.val() === false || !newData.exists()"
+          }
+        }
+      }
+    },
+
+    "userDMs": {
+      "$uid": {
+        ".read": "auth.uid == $uid",
+        ".write": "auth.uid == $uid",
+        ".indexOn": ["lastMessageTime"]
+      }
+    },
+
+    "presence": {
+      "$uid": {
+        ".read": true,
+        ".write": "auth != null && auth.uid == $uid",
+        ".validate": "(newData.hasChild('status') && newData.hasChild('lastSeen')) || !newData.exists()"
+      }
+    },
+
+    "permissions": {
+      ".read": true,
+      ".write": false
+    },
+
+    "bannedUsers": {
+      ".read": "auth != null",
+      ".write": false
+    }
+  }
+}
