@@ -5,7 +5,7 @@
 class HoneypotDecoy {
     constructor() {
         // Fake identifiers that old versions might try
-        this.DECOY_IDENTIFIERS = ['BLA4', 'BLA3', 'BLKX', 'BLK2'];
+        this.DECOY_IDENTIFIERS = ['BL4K3', 'BL4', 'S4M', 'SHA256', 'OLDVER', 'TESTID'];
     }
 
     /**
