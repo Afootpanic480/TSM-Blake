@@ -276,20 +276,25 @@ class BLA512 {
             const fResult = this._fFunction(right, roundKeys[round], round);
             
             // XOR left with F-function result
-            const newRight = new Uint8Array(left.length);
+            const newLeft = new Uint8Array(right.length);
             for (let i = 0; i < left.length; i++) {
-                newRight[i] = left[i] ^ fResult[i];
+                newLeft[i] = left[i] ^ fResult[i];
             }
             
-            // Swap
-            left = right;
-            right = newRight;
+            // Swap for next round (except on last round)
+            if (round < this.ROUNDS - 1) {
+                left = right;
+                right = newLeft;
+            } else {
+                // On last round, don't swap - just update left
+                left = newLeft;
+            }
         }
         
-        // Final combination (no swap on last round)
+        // Final combination
         const result = new Uint8Array(block.length);
-        result.set(right, 0);
-        result.set(left, halfSize);
+        result.set(left, 0);
+        result.set(right, halfSize);
         
         return result;
     }
@@ -298,30 +303,35 @@ class BLA512 {
      * Decrypt a single block using BLA-512
      */
     _decryptBlock(block, roundKeys) {
-        // Split into left and right halves
+        // For Feistel decryption, use the same structure as encryption but with reversed round keys
         const halfSize = block.length / 2;
         let left = block.slice(0, halfSize);
         let right = block.slice(halfSize);
         
         // 16 rounds in reverse order
         for (let round = this.ROUNDS - 1; round >= 0; round--) {
-            const fResult = this._fFunction(left, roundKeys[round], round);
+            const fResult = this._fFunction(right, roundKeys[round], round);
             
-            // XOR right with F-function result
+            // XOR left with F-function result
             const newLeft = new Uint8Array(right.length);
-            for (let i = 0; i < right.length; i++) {
-                newLeft[i] = right[i] ^ fResult[i];
+            for (let i = 0; i < left.length; i++) {
+                newLeft[i] = left[i] ^ fResult[i];
             }
             
-            // Swap
-            right = left;
-            left = newLeft;
+            // Swap for next round (except on last round which is round 0)
+            if (round > 0) {
+                left = right;
+                right = newLeft;
+            } else {
+                // On last round (round 0), don't swap - just update left
+                left = newLeft;
+            }
         }
         
         // Final combination
         const result = new Uint8Array(block.length);
-        result.set(right, 0);
-        result.set(left, halfSize);
+        result.set(left, 0);
+        result.set(right, halfSize);
         
         return result;
     }
