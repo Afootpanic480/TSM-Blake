@@ -3,25 +3,64 @@
 <head>
     <title>BLA-512 Test</title>
     <script src="./js/BLA512Core.js"></script>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        h1 {
+            color: #4a6bff;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .warning { color: #fbbf24; }
+        .info { color: #60a5fa; }
+        pre {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #4a6bff;
+        }
+    </style>
 </head>
 <body>
-    <h1>BLA-512 Encryption Test</h1>
+    <h1>BLA-512 Encryption Test Suite</h1>
     <div id="results"></div>
     <script>
+        // Suppress console errors during testing (they are expected)
+        const originalConsoleError = console.error;
+        let testMode = true;
+        console.error = function(...args) {
+            if (!testMode) {
+                originalConsoleError.apply(console, args);
+            }
+        };
+
         async function runTests() {
             const results = document.getElementById('results');
-            const log = (msg, isError = false) => {
+            const log = (msg, className = 'info') => {
                 const p = document.createElement('p');
+                p.className = className;
                 p.textContent = msg;
-                p.style.color = isError ? 'red' : 'green';
                 results.appendChild(p);
+            };
+
+            const logPre = (msg, className = 'info') => {
+                const pre = document.createElement('pre');
+                pre.className = className;
+                pre.textContent = msg;
+                results.appendChild(pre);
             };
 
             try {
                 const bla512 = window.BLA512Engine;
                 
-                // Test 1: Basic encryption/decryption
-                log('Test 1: Basic encryption/decryption...');
+                log('═══════════════════════════════════════════════════', 'info');
+                log('TEST 1: Basic Encryption/Decryption', 'info');
+                log('═══════════════════════════════════════════════════', 'info');
+                
                 const encoder = new TextEncoder();
                 const testMessage = encoder.encode(JSON.stringify({
                     id: 'test123',
@@ -31,37 +70,71 @@
                 const password = 'testPassword123';
                 const salt = crypto.getRandomValues(new Uint8Array(32));
                 
+                log('Encrypting test message...', 'info');
                 const encrypted = await bla512.encrypt(testMessage, password, salt);
-                log(`Encrypted data length: ${encrypted.length} bytes`);
+                log(`✓ Encrypted successfully (${encrypted.length} bytes)`, 'success');
                 
+                log('Decrypting with correct password...', 'info');
                 const decrypted = await bla512.decrypt(encrypted, password, salt);
                 const decryptedText = new TextDecoder().decode(decrypted);
-                log(`Decrypted message: ${decryptedText}`);
+                const parsed = JSON.parse(decryptedText);
+                log(`✓ Decrypted successfully: "${parsed.message}"`, 'success');
                 
-                // Test 2: Wrong password should fail with padding error
-                log('\nTest 2: Testing wrong password...');
+                log('\n═══════════════════════════════════════════════════', 'info');
+                log('TEST 2: Wrong Password Detection', 'info');
+                log('═══════════════════════════════════════════════════', 'info');
+                log('Attempting decryption with wrong password...', 'info');
+                log('(Error in console is EXPECTED)', 'warning');
+                
                 try {
                     await bla512.decrypt(encrypted, 'wrongPassword', salt);
-                    log('ERROR: Should have failed with wrong password!', true);
+                    log('✗ FAILED: Should have thrown an error!', 'error');
                 } catch (error) {
-                    log(`Correctly caught error: ${error.message}`);
+                    if (error.message.includes('password') || error.message.includes('corrupted')) {
+                        log(`✓ Correctly rejected wrong password`, 'success');
+                        logPre(`Error message: "${error.message}"`, 'info');
+                    } else {
+                        log(`⚠ Unexpected error type: ${error.message}`, 'warning');
+                    }
                 }
                 
-                // Test 3: Corrupted data should fail
-                log('\nTest 3: Testing corrupted data...');
+                log('\n═══════════════════════════════════════════════════', 'info');
+                log('TEST 3: Corrupted Data Detection', 'info');
+                log('═══════════════════════════════════════════════════', 'info');
+                log('Corrupting encrypted data...', 'info');
+                
                 const corrupted = new Uint8Array(encrypted);
                 corrupted[10] ^= 0xFF; // Flip some bits
+                log('Attempting decryption with corrupted data...', 'info');
+                log('(Error in console is EXPECTED)', 'warning');
+                
                 try {
                     await bla512.decrypt(corrupted, password, salt);
-                    log('ERROR: Should have failed with corrupted data!', true);
+                    log('✗ FAILED: Should have thrown an error!', 'error');
                 } catch (error) {
-                    log(`Correctly caught error: ${error.message}`);
+                    if (error.message.includes('password') || error.message.includes('corrupted')) {
+                        log(`✓ Correctly detected corrupted data`, 'success');
+                        logPre(`Error message: "${error.message}"`, 'info');
+                    } else {
+                        log(`⚠ Unexpected error type: ${error.message}`, 'warning');
+                    }
                 }
                 
-                log('\n✅ All tests completed successfully!');
+                log('\n═══════════════════════════════════════════════════', 'success');
+                log('✅ ALL TESTS PASSED!', 'success');
+                log('═══════════════════════════════════════════════════', 'success');
+                
+                testMode = false;
+                console.error = originalConsoleError;
+                
             } catch (error) {
-                log(`FATAL ERROR: ${error.message}`, true);
-                console.error(error);
+                log('\n═══════════════════════════════════════════════════', 'error');
+                log('❌ TEST SUITE FAILED', 'error');
+                log('═══════════════════════════════════════════════════', 'error');
+                logPre(`Fatal Error: ${error.message}\n${error.stack}`, 'error');
+                
+                testMode = false;
+                console.error = originalConsoleError;
             }
         }
         

@@ -425,8 +425,12 @@ class BLA512 {
         try {
             return this._removePadding(decrypted);
         } catch (paddingError) {
-            // If padding is invalid, it's likely due to wrong password
-            throw new Error('Incorrect password or corrupted data');
+            // Only convert padding errors to password errors
+            // Re-throw other unexpected errors for debugging
+            if (paddingError.message && paddingError.message.includes('padding')) {
+                throw new Error('Incorrect password or corrupted data');
+            }
+            throw paddingError;
         }
     }
 
