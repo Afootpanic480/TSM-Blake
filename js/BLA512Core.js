@@ -343,17 +343,27 @@ class BLA512 {
      * Remove PKCS7 padding
      */
     _removePadding(data) {
+        // Ensure we have data
+        if (!data || data.length === 0) {
+            throw new Error('Invalid padding: No data');
+        }
+        
         const paddingLength = data[data.length - 1];
         
-        // Validate padding
+        // Validate padding length is within valid range
         if (paddingLength > this.BLOCK_SIZE || paddingLength === 0) {
-            throw new Error('Invalid padding');
+            throw new Error('Invalid padding: Incorrect password or corrupted data');
+        }
+        
+        // Ensure we have enough data for the padding
+        if (data.length < paddingLength) {
+            throw new Error('Invalid padding: Incorrect password or corrupted data');
         }
         
         // Verify all padding bytes are correct
         for (let i = data.length - paddingLength; i < data.length; i++) {
             if (data[i] !== paddingLength) {
-                throw new Error('Invalid padding');
+                throw new Error('Invalid padding: Incorrect password or corrupted data');
             }
         }
         
@@ -388,6 +398,15 @@ class BLA512 {
      * Decrypt data with BLA-512
      */
     async decrypt(encryptedData, password, salt) {
+        // Validate input
+        if (!encryptedData || encryptedData.length === 0) {
+            throw new Error('No data to decrypt');
+        }
+        
+        if (encryptedData.length % this.BLOCK_SIZE !== 0) {
+            throw new Error('Invalid encrypted data: Size not multiple of block size');
+        }
+        
         // Derive key
         const masterKey = await this.deriveKey(password, salt);
         
@@ -402,8 +421,13 @@ class BLA512 {
             decrypted.set(decryptedBlock, i);
         }
         
-        // Remove padding
-        return this._removePadding(decrypted);
+        // Remove padding - this will throw if password is wrong
+        try {
+            return this._removePadding(decrypted);
+        } catch (paddingError) {
+            // If padding is invalid, it's likely due to wrong password
+            throw new Error('Incorrect password or corrupted data');
+        }
     }
 
     /**

@@ -182,10 +182,22 @@ async function decryptBLA512Message(data, password, originalInput) {
             showAlert('🔓 BLA-512: Message decrypted successfully!', 'success');
         }
     } catch (decryptError) {
-        if (decryptError.name === 'SyntaxError') {
+        console.error('BLA-512 decryption error:', decryptError);
+        
+        // Provide user-friendly error messages
+        if (decryptError.message && decryptError.message.includes('padding')) {
+            throw new Error('Incorrect password. Please verify your password and try again.');
+        } else if (decryptError.name === 'SyntaxError') {
             throw new Error('Incorrect password. Unable to decrypt message.');
+        } else if (decryptError.message && (
+            decryptError.message.includes('password') || 
+            decryptError.message.includes('corrupted')
+        )) {
+            throw decryptError;
         }
-        throw decryptError;
+        
+        // Generic error for unexpected issues
+        throw new Error('Decryption failed. Password may be incorrect or message is corrupted.');
     }
 }
 

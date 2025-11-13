@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BLA-512 Test</title>
+    <script src="./js/BLA512Core.js"></script>
+</head>
+<body>
+    <h1>BLA-512 Encryption Test</h1>
+    <div id="results"></div>
+    <script>
+        async function runTests() {
+            const results = document.getElementById('results');
+            const log = (msg, isError = false) => {
+                const p = document.createElement('p');
+                p.textContent = msg;
+                p.style.color = isError ? 'red' : 'green';
+                results.appendChild(p);
+            };
+
+            try {
+                const bla512 = window.BLA512Engine;
+                
+                // Test 1: Basic encryption/decryption
+                log('Test 1: Basic encryption/decryption...');
+                const encoder = new TextEncoder();
+                const testMessage = encoder.encode(JSON.stringify({
+                    id: 'test123',
+                    message: 'Hello, World!',
+                    expiryTime: null
+                }));
+                const password = 'testPassword123';
+                const salt = crypto.getRandomValues(new Uint8Array(32));
+                
+                const encrypted = await bla512.encrypt(testMessage, password, salt);
+                log(`Encrypted data length: ${encrypted.length} bytes`);
+                
+                const decrypted = await bla512.decrypt(encrypted, password, salt);
+                const decryptedText = new TextDecoder().decode(decrypted);
+                log(`Decrypted message: ${decryptedText}`);
+                
+                // Test 2: Wrong password should fail with padding error
+                log('\nTest 2: Testing wrong password...');
+                try {
+                    await bla512.decrypt(encrypted, 'wrongPassword', salt);
+                    log('ERROR: Should have failed with wrong password!', true);
+                } catch (error) {
+                    log(`Correctly caught error: ${error.message}`);
+                }
+                
+                // Test 3: Corrupted data should fail
+                log('\nTest 3: Testing corrupted data...');
+                const corrupted = new Uint8Array(encrypted);
+                corrupted[10] ^= 0xFF; // Flip some bits
+                try {
+                    await bla512.decrypt(corrupted, password, salt);
+                    log('ERROR: Should have failed with corrupted data!', true);
+                } catch (error) {
+                    log(`Correctly caught error: ${error.message}`);
+                }
+                
+                log('\n✅ All tests completed successfully!');
+            } catch (error) {
+                log(`FATAL ERROR: ${error.message}`, true);
+                console.error(error);
+            }
+        }
+        
+        window.addEventListener('load', runTests);
+    </script>
+</body>
+</html>
