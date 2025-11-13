@@ -142,11 +142,21 @@ async function decryptBLA512Message(data, password, originalInput) {
         const authEngine = window.FirebaseAuthEngine;
         if (authEngine && parsedData.id) {
             try {
-                await authEngine.validateAuthToken(parsedData.id, encryptedData);
-                console.log('Firebase authentication validated successfully');
+                const authResult = await authEngine.validateAuthToken(parsedData.id, encryptedData);
+                if (authResult) {
+                    console.log('✓ Cloud authentication validated successfully');
+                } else {
+                    console.log('ℹ No cloud authentication token found (message from different session)');
+                }
             } catch (authError) {
-                console.warn('Firebase authentication failed:', authError);
-                showAlert('Warning: Cloud authentication failed. Message may not be authentic.', 'warning');
+                // Log but don't show alert for authentication warnings
+                // These are informational only, not critical errors
+                console.warn('Cloud authentication warning:', authError.message);
+                
+                // Only show alert for critical authentication failures
+                if (authError.message.includes('expired') || authError.message.includes('tampering')) {
+                    showAlert('⚠ ' + authError.message, 'warning');
+                }
             }
         }
 
