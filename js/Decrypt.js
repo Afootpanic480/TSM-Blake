@@ -50,6 +50,17 @@ async function decryptMessage() {
         const version = data.slice(0, 1)[0];
         const identifier = new TextDecoder().decode(data.slice(1, 5));
         
+        // HONEYPOT: Check if this is a decoy attempt (wrong/old version)
+        if (window.HoneypotDecoy && window.HoneypotDecoy.isDecoyIdentifier(identifier)) {
+            console.warn(`🍯 Decoy identifier detected: ${identifier}`);
+            // Handle as decoy - waste attacker's time
+            const decoyResult = await window.HoneypotDecoy.handleDecoyDecryption(data, password);
+            // Show fake "success" with garbage data
+            document.getElementById('resultText').value = decoyResult.plaintext;
+            showAlert('⚠️ Warning: Data may be corrupted or from incompatible version', 'warning');
+            return false; // Don't proceed
+        }
+        
         // Check if this is a BLA-512 encrypted message
         if (identifier === 'BLA5' && version === 2) {
             // New BLA-512 decryption
@@ -59,6 +70,13 @@ async function decryptMessage() {
             await decryptLegacyMessage(data, password);
         } else {
             console.error(`Invalid identifier: ${identifier}, version: ${version}`);
+            // HONEYPOT: Generate and show decoy data instead of clear error
+            if (window.HoneypotDecoy) {
+                const decoyResult = await window.HoneypotDecoy.handleDecoyDecryption(data, password);
+                document.getElementById('resultText').value = decoyResult.plaintext;
+                showAlert('⚠️ Decryption completed with warnings. Data may be corrupted.', 'warning');
+                return false;
+            }
             throw new Error('This message was not encrypted with this tool or is corrupted');
         }
         
@@ -114,6 +132,19 @@ async function decryptBLA512Message(data, password, originalInput) {
     const hmacValue = data.slice(37, 69); // 32 bytes
     const encryptedData = data.slice(69);
     
+    // Generate a temporary message ID for rate limiting
+    const encoder = new TextEncoder();
+    const msgIdData = await crypto.subtle.digest('SHA-256', encryptedData.slice(0, 32));
+    const tempMsgId = Array.from(new Uint8Array(msgIdData)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
+    
+    // SECURITY CHECK: Rate limiting
+    if (window.SecurityEnhanced) {
+        const lockStatus = window.SecurityEnhanced.isMessageLocked(tempMsgId);
+        if (lockStatus.locked) {
+            throw new Error(lockStatus.reason);
+        }
+    }
+    
     // Get BLA-512 engine
     const bla512 = window.BLA512Engine;
     if (!bla512) {
@@ -127,6 +158,18 @@ async function decryptBLA512Message(data, password, originalInput) {
     const isHmacValid = await bla512.verifyHMAC(dataToVerify, hmacValue, salt);
     if (!isHmacValid) {
         console.error('HMAC verification failed - incorrect password or corrupted message');
+        
+        // SECURITY: Record failed attempt
+        if (window.SecurityEnhanced) {
+            const status = window.SecurityEnhanced.recordFailedAttempt(tempMsgId);
+            if (status.locked) {
+                throw new Error(status.reason);
+            }
+            if (status.attemptsLeft !== undefined) {
+                throw new Error(`Incorrect password or message has been tampered with. ${status.attemptsLeft} attempt(s) remaining.`);
+            }
+        }
+        
         throw new Error('Incorrect password or message has been tampered with');
     }
     
@@ -171,6 +214,35 @@ async function decryptBLA512Message(data, password, originalInput) {
 
         document.getElementById('resultText').value = parsedData.message;
         recordDecryption(originalInput);
+        
+        // SECURITY: Record successful decryption with device info
+        if (window.SecurityEnhanced) {
+            try {
+                const accessInfo = await window.SecurityEnhanced.recordSuccessfulDecryption(
+                    parsedData.id || tempMsgId,
+                    { messageId: parsedData.id }
+                );
+                
+                // Check device trust
+                const trustInfo = await window.SecurityEnhanced.checkDeviceTrust();
+                
+                // Alert if new or untrusted device
+                if (!trustInfo.trusted) {
+                    console.warn('🔐 Security: ' + trustInfo.reason);
+                    showAlert(`🔐 ${trustInfo.reason}. ${trustInfo.recommendation}`, 'warning');
+                } else if (accessInfo.isNewDevice) {
+                    console.log('ℹ️ First decryption on this device');
+                }
+                
+                // Show last access info if available
+                if (accessInfo.lastAccess) {
+                    const timeSince = Math.floor(accessInfo.lastAccess.timeSince / 1000 / 60);
+                    console.log(`📊 Last access: ${timeSince} minutes ago`);
+                }
+            } catch (secError) {
+                console.warn('Security logging failed:', secError);
+            }
+        }
         
         // Expose last decrypted id for button wrapper to call MessageService
         try { 
