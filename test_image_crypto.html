@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Crypto Container - Test Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #00ff41;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff41;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #ff6b6b;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid #00ff41;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 1px solid #00d4ff;
+            padding-bottom: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: rgba(0, 255, 65, 0.5);
+        }
+
+        button {
+            background: linear-gradient(135deg, #00ff41 0%, #00d4ff 100%);
+            border: none;
+            padding: 12px 30px;
+            color: #000;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 65, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .output {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #ff6b6b;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            color: #ff6b6b;
+            font-size: 0.85em;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .output.success {
+            border-color: #00ff41;
+            color: #00ff41;
+        }
+
+        .image-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .image-preview canvas,
+        .image-preview img {
+            max-width: 100%;
+            border: 2px solid #00ff41;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #00d4ff;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #00ff41;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .warning {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid #ff6b6b;
+            padding: 10px;
+            border-radius: 5px;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 255, 65, 0.3);
+            border-top-color: #00ff41;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .metadata-display {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #00d4ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #00d4ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ IMAGE CRYPTO CONTAINER</h1>
+        <div class="subtitle">EXPERIMENTAL MULTI-LAYER PIXEL-BASED ENCRYPTION SYSTEM</div>
+
+        <div class="warning">
+            ⚠️ <strong>NON-PRODUCTION PROTOTYPE</strong> - This system uses experimental obfuscation techniques 
+            and is NOT cryptographically secure. For research, ARGs, and creative projects only.
+        </div>
+
+        <div class="grid-2">
+            <!-- ENCRYPTION SECTION -->
+            <div class="section">
+                <div class="section-title">📥 ENCRYPT MESSAGE → IMAGE</div>
+                
+                <div class="input-group">
+                    <label for="encryptMessage">Message to Encrypt:</label>
+                    <textarea id="encryptMessage" placeholder="Enter your secret message here...">The falcon has landed at midnight. Proceed with Phase 3.</textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="encryptPassword">Password:</label>
+                    <input type="password" id="encryptPassword" placeholder="Enter encryption password" value="test123">
+                </div>
+
+                <div class="input-group">
+                    <label>Image Dimensions:</label>
+                    <input type="text" id="imageWidth" placeholder="Width (default: 512)" value="512" style="width: 48%; display: inline-block; margin-right: 4%;">
+                    <input type="text" id="imageHeight" placeholder="Height (default: 512)" value="512" style="width: 48%; display: inline-block;">
+                </div>
+
+                <button onclick="performEncryption()">🔒 ENCRYPT TO IMAGE</button>
+                <button onclick="downloadImage()">💾 DOWNLOAD IMAGE</button>
+
+                <div id="encryptOutput" class="output" style="display: none;"></div>
+
+                <div class="image-preview" id="encryptImagePreview" style="display: none;">
+                    <canvas id="outputCanvas"></canvas>
+                </div>
+
+                <div class="stats" id="encryptStats" style="display: none;"></div>
+
+                <div id="metadataDisplay" class="metadata-display" style="display: none;"></div>
+            </div>
+
+            <!-- DECRYPTION SECTION -->
+            <div class="section">
+                <div class="section-title">📤 DECRYPT IMAGE → MESSAGE</div>
+                
+                <div class="input-group">
+                    <label for="decryptImage">Select Image File:</label>
+                    <input type="file" id="decryptImage" accept="image/png,image/webp">
+                </div>
+
+                <div class="input-group">
+                    <label for="decryptPassword">Password:</label>
+                    <input type="password" id="decryptPassword" placeholder="Enter decryption password" value="test123">
+                </div>
+
+                <button onclick="performDecryption()">🔓 DECRYPT FROM IMAGE</button>
+                <button onclick="testWithGeneratedImage()">🔄 TEST WITH GENERATED</button>
+
+                <div id="decryptOutput" class="output" style="display: none;"></div>
+
+                <div class="image-preview" id="decryptImagePreview" style="display: none;"></div>
+
+                <div class="stats" id="decryptStats" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- TECHNICAL INFO SECTION -->
+        <div class="section">
+            <div class="section-title">🔬 TECHNICAL ARCHITECTURE</div>
+            <div style="color: #00d4ff; line-height: 1.6;">
+                <strong>Obfuscation Layers Applied:</strong>
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>Block-Based Embedding:</strong> Payload distributed across 8×8 pixel blocks using password-seeded shuffling</li>
+                    <li><strong>RGB Channel Permutation:</strong> Color channels permuted per block (6 possible arrangements)</li>
+                    <li><strong>Block Shuffle:</strong> Entire pixel blocks rearranged using Fisher-Yates with deterministic PRNG</li>
+                    <li><strong>XOR Masking:</strong> Each pixel XORed with password-derived pseudorandom stream</li>
+                    <li><strong>Decoy Regions:</strong> Fake magic headers embedded at random locations</li>
+                    <li><strong>Length Prefix:</strong> 6-byte header (magic + length) enables payload boundary detection</li>
+                </ol>
+                <p style="margin-top: 15px;">
+                    <strong>Deterministic Extraction:</strong> Password seeds PRNG → generates identical obfuscation sequence → 
+                    layers reversed in opposite order → payload extracted → BLAK-512 decrypts → plaintext recovered
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Dependencies -->
+    <script src="BLA512Core.js"></script>
+    <script src="ImageCryptoContainer.js"></script>
+
+    <script>
+        let lastGeneratedContainer = null;
+
+        async function performEncryption() {
+            const message = document.getElementById('encryptMessage').value;
+            const password = document.getElementById('encryptPassword').value;
+            const width = parseInt(document.getElementById('imageWidth').value) || 512;
+            const height = parseInt(document.getElementById('imageHeight').value) || 512;
+            
+            const outputDiv = document.getElementById('encryptOutput');
+            const previewDiv = document.getElementById('encryptImagePreview');
+            const statsDiv = document.getElementById('encryptStats');
+            const metadataDiv = document.getElementById('metadataDisplay');
+
+            if (!message || !password) {
+                showOutput(outputDiv, 'Please enter both message and password.', false);
+                return;
+            }
+
+            try {
+                showOutput(outputDiv, 'Encrypting message and embedding into image...', true);
+
+                const startTime = performance.now();
+                
+                // Encrypt to image
+                const container = await ImageCryptoContainer.encryptToImage(message, password, {
+                    width: width,
+                    height: height
+                });
+
+                const endTime = performance.now();
+                const duration = (endTime - startTime).toFixed(2);
+
+                // Display canvas
+                const outputCanvas = document.getElementById('outputCanvas');
+                const ctx = outputCanvas.getContext('2d');
+                outputCanvas.width = container.canvas.width;
+                outputCanvas.height = container.canvas.height;
+                ctx.drawImage(container.canvas, 0, 0);
+
+                previewDiv.style.display = 'block';
+
+                // Store for testing
+                lastGeneratedContainer = container;
+
+                // Show stats
+                const messageBytes = new TextEncoder().encode(message).length;
+                const imageBytes = container.blob.size;
+                const overhead = ((imageBytes / messageBytes) * 100).toFixed(2);
+
+                statsDiv.innerHTML = `
+                    <div class="stat">
+                        <div class="stat-label">Original Size</div>
+                        <div class="stat-value">${messageBytes} bytes</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Image Size</div>
+                        <div class="stat-value">${imageBytes} bytes</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Overhead</div>
+                        <div class="stat-value">${overhead}%</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Time</div>
+                        <div class="stat-value">${duration} ms</div>
+                    </div>
+                `;
+                statsDiv.style.display = 'grid';
+
+                // Show metadata
+                metadataDiv.innerHTML = '<strong>Container Metadata:</strong><br>' + 
+                    JSON.stringify(container.metadata, null, 2);
+                metadataDiv.style.display = 'block';
+
+                showOutput(outputDiv, `✅ SUCCESS!\n\nMessage encrypted and embedded into ${width}×${height} image.\nPayload distributed across ${Math.floor(width/8) * Math.floor(height/8)} blocks with multi-layer obfuscation.`, true);
+
+            } catch (error) {
+                showOutput(outputDiv, `❌ ERROR: ${error.message}\n${error.stack}`, false);
+            }
+        }
+
+        function downloadImage() {
+            if (!lastGeneratedContainer) {
+                alert('Please generate an image first!');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = `encrypted_${Date.now()}.png`;
+            link.href = lastGeneratedContainer.dataURL;
+            link.click();
+        }
+
+        async function performDecryption() {
+            const fileInput = document.getElementById('decryptImage');
+            const password = document.getElementById('decryptPassword').value;
+            const outputDiv = document.getElementById('decryptOutput');
+            const previewDiv = document.getElementById('decryptImagePreview');
+            const statsDiv = document.getElementById('decryptStats');
+
+            if (!fileInput.files.length) {
+                showOutput(outputDiv, 'Please select an image file.', false);
+                return;
+            }
+
+            if (!password) {
+                showOutput(outputDiv, 'Please enter the password.', false);
+                return;
+            }
+
+            try {
+                showOutput(outputDiv, 'Loading image and extracting payload...', true);
+
+                const startTime = performance.now();
+
+                // Decrypt from image
+                const result = await ImageCryptoContainer.decryptFromImage(
+                    fileInput.files[0],
+                    password
+                );
+
+                const endTime = performance.now();
+                const duration = (endTime - startTime).toFixed(2);
+
+                if (result.success) {
+                    statsDiv.innerHTML = `
+                        <div class="stat">
+                            <div class="stat-label">Decryption Time</div>
+                            <div class="stat-value">${duration} ms</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Message Length</div>
+                            <div class="stat-value">${result.plaintext.length} chars</div>
+                        </div>
+                    `;
+                    statsDiv.style.display = 'grid';
+
+                    showOutput(outputDiv, `✅ DECRYPTION SUCCESS!\n\nRecovered Message:\n\n${result.plaintext}`, true);
+
+                    // Show image preview
+                    const img = new Image();
+                    img.src = URL.createObjectURL(fileInput.files[0]);
+                    img.onload = () => {
+                        previewDiv.innerHTML = '';
+                        previewDiv.appendChild(img);
+                        previewDiv.style.display = 'block';
+                    };
+                } else {
+                    showOutput(outputDiv, `❌ DECRYPTION FAILED\n\nError: ${result.error}\n\nPossible causes:\n- Incorrect password\n- Corrupted image\n- Not an encrypted container\n- Metadata stripped`, false);
+                }
+
+            } catch (error) {
+                showOutput(outputDiv, `❌ ERROR: ${error.message}`, false);
+            }
+        }
+
+        async function testWithGeneratedImage() {
+            if (!lastGeneratedContainer) {
+                alert('Please generate an encrypted image first using the left panel!');
+                return;
+            }
+
+            const password = document.getElementById('decryptPassword').value;
+            const outputDiv = document.getElementById('decryptOutput');
+            const statsDiv = document.getElementById('decryptStats');
+
+            if (!password) {
+                showOutput(outputDiv, 'Please enter the password.', false);
+                return;
+            }
+
+            try {
+                showOutput(outputDiv, 'Testing with generated image...', true);
+
+                const startTime = performance.now();
+
+                // Test with canvas directly
+                const result = await ImageCryptoContainer.decryptFromImage(
+                    lastGeneratedContainer.canvas,
+                    password
+                );
+
+                const endTime = performance.now();
+                const duration = (endTime - startTime).toFixed(2);
+
+                if (result.success) {
+                    statsDiv.innerHTML = `
+                        <div class="stat">
+                            <div class="stat-label">Round-Trip Time</div>
+                            <div class="stat-value">${duration} ms</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Status</div>
+                            <div class="stat-value">✓ VERIFIED</div>
+                        </div>
+                    `;
+                    statsDiv.style.display = 'grid';
+
+                    showOutput(outputDiv, `✅ ROUND-TRIP TEST SUCCESS!\n\nRecovered Message:\n\n${result.plaintext}\n\n✓ Encryption → Embedding → Extraction → Decryption chain verified`, true);
+                } else {
+                    showOutput(outputDiv, `❌ TEST FAILED: ${result.error}`, false);
+                }
+
+            } catch (error) {
+                showOutput(outputDiv, `❌ ERROR: ${error.message}`, false);
+            }
+        }
+
+        function showOutput(element, message, success) {
+            element.textContent = message;
+            element.className = success ? 'output success' : 'output';
+            element.style.display = 'block';
+        }
+
+        // Auto-test on page load (optional)
+        window.addEventListener('load', () => {
+            console.log('Image Crypto Container loaded');
+            console.log('Config:', ImageCryptoContainer.CONFIG);
+        });
+    </script>
+</body>
+</html>

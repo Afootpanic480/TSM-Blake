@@ -300,7 +300,12 @@ class FirebaseAuth {
                     }
                 }
             } catch (error) {
-                console.warn('Firebase cleanup failed:', error);
+                // Silently fall back to local mode on permission errors
+                if (error.message && error.message.includes('permission')) {
+                    this.useFallback = true;
+                } else {
+                    console.warn('Firebase cleanup failed:', error);
+                }
             }
         }
         
@@ -332,7 +337,12 @@ class FirebaseAuth {
                     await db.ref('authTokens/' + messageId).remove();
                 }
             } catch (error) {
-                console.warn('Failed to remove token from Firebase:', error);
+                // Silently fall back to local mode on permission errors
+                if (error.message && error.message.includes('permission')) {
+                    this.useFallback = true;
+                } else {
+                    console.warn('Failed to remove token from Firebase:', error);
+                }
             }
         }
         

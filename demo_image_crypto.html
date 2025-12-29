@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Crypto - Quick Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0a0a0a;
+            color: #00ff41;
+        }
+        .container {
+            background: #1a1a1a;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41;
+        }
+        .demo-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+        }
+        button {
+            background: linear-gradient(135deg, #00ff41, #00d4ff);
+            border: none;
+            padding: 12px 24px;
+            color: #000;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.4);
+        }
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            background: #0a0a0a;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+        input[type="password"], input[type="text"] {
+            width: 100%;
+            background: #0a0a0a;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 5px 0;
+        }
+        .output {
+            background: #0a0a0a;
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .output.success {
+            border-color: #00ff41;
+            color: #00ff41;
+        }
+        canvas {
+            max-width: 100%;
+            border: 2px solid #00ff41;
+            margin-top: 10px;
+            display: block;
+        }
+        .info {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 12px;
+        }
+        .warning {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼️ Image Crypto Container - Quick Demo</h1>
+        
+        <div class="warning">
+            ⚠️ <strong>EXPERIMENTAL SYSTEM</strong> - Not cryptographically secure. For creative projects only.
+        </div>
+
+        <!-- DEMO 1: Simple Round-Trip -->
+        <div class="demo-section">
+            <h3>Demo 1: Simple Round-Trip Test</h3>
+            <p>Click the button to encrypt a test message, embed it in an image, then extract and decrypt it.</p>
+            <button onclick="runSimpleDemo()">▶️ Run Simple Demo</button>
+            <div id="demo1Output" style="display:none;"></div>
+            <canvas id="demo1Canvas" style="display:none;"></canvas>
+        </div>
+
+        <!-- DEMO 2: Custom Message -->
+        <div class="demo-section">
+            <h3>Demo 2: Encrypt Your Message</h3>
+            <label>Message:</label>
+            <textarea id="customMessage" placeholder="Enter your secret message...">The secret meeting is at midnight in the old library.</textarea>
+            
+            <label>Password:</label>
+            <input type="password" id="customPassword" placeholder="Enter password..." value="demo123">
+            
+            <button onclick="runCustomDemo()">🔒 Encrypt to Image</button>
+            <button onclick="downloadCustomImage()" id="downloadBtn" style="display:none;">💾 Download Image</button>
+            
+            <div id="demo2Output" style="display:none;"></div>
+            <canvas id="demo2Canvas" style="display:none;"></canvas>
+        </div>
+
+        <!-- DEMO 3: Decrypt from Image -->
+        <div class="demo-section">
+            <h3>Demo 3: Decrypt from Image</h3>
+            <p>Upload an encrypted PNG image and decrypt it.</p>
+            
+            <input type="file" id="fileInput" accept="image/png" style="color: #00ff41;">
+            
+            <label>Password:</label>
+            <input type="password" id="decryptPassword" placeholder="Enter password..." value="demo123">
+            
+            <button onclick="runDecryptDemo()">🔓 Decrypt Image</button>
+            <button onclick="testWithDemo2Image()" id="testDemo2Btn" style="display:none;">🔄 Test with Demo 2 Image</button>
+            
+            <div id="demo3Output" style="display:none;"></div>
+        </div>
+
+        <div class="info">
+            <strong>How it works:</strong><br>
+            1. Message encrypted with BLAK-512<br>
+            2. Embedded into image pixels using shuffled blocks<br>
+            3. Applied 4 obfuscation layers (RGB permutation, block shuffle, XOR mask, decoys)<br>
+            4. Image looks like random noise<br>
+            5. Decryption reverses all steps with correct password
+        </div>
+
+        <div class="info">
+            📖 <strong>Full Documentation:</strong><br>
+            • <a href="IMAGE_CRYPTO_DOCUMENTATION.md" style="color: #00d4ff;">Technical Documentation</a><br>
+            • <a href="IMAGE_CRYPTO_VISUAL_GUIDE.md" style="color: #00d4ff;">Visual Architecture Guide</a><br>
+            • <a href="test_image_crypto.html" style="color: #00d4ff;">Complete Test Suite</a>
+        </div>
+    </div>
+
+    <!-- Load Dependencies -->
+    <script src="js/BLA512Core.js"></script>
+    <script src="js/ImageCryptoContainer.js"></script>
+
+    <script>
+        let demo2Container = null;
+
+        // Demo 1: Simple Round-Trip
+        async function runSimpleDemo() {
+            const output = document.getElementById('demo1Output');
+            const canvas = document.getElementById('demo1Canvas');
+            
+            output.style.display = 'block';
+            output.className = 'output';
+            output.textContent = 'Running demo...';
+
+            try {
+                const testMessage = "Hello from Image Crypto Container! Time: " + new Date().toISOString();
+                const password = "test_password_123";
+
+                // Step 1: Encrypt
+                output.textContent += '\n\n[1/3] Encrypting message...';
+                const container = await ImageCryptoContainer.encryptToImage(
+                    testMessage,
+                    password,
+                    { width: 256, height: 256 }
+                );
+
+                // Step 2: Display
+                output.textContent += '\n[2/3] Image generated ✓';
+                canvas.width = 256;
+                canvas.height = 256;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(container.canvas, 0, 0);
+                canvas.style.display = 'block';
+
+                // Step 3: Decrypt
+                output.textContent += '\n[3/3] Extracting and decrypting...';
+                const result = await ImageCryptoContainer.decryptFromImage(
+                    container.canvas,
+                    password
+                );
+
+                if (result.success && result.plaintext === testMessage) {
+                    output.className = 'output success';
+                    output.textContent += '\n\n✅ SUCCESS! Round-trip verified.\n\n';
+                    output.textContent += 'Original: ' + testMessage + '\n';
+                    output.textContent += 'Decrypted: ' + result.plaintext + '\n';
+                    output.textContent += '\n✓ Messages match perfectly!';
+                } else {
+                    output.className = 'output';
+                    output.textContent += '\n\n❌ FAILED: Messages do not match';
+                }
+
+            } catch (error) {
+                output.className = 'output';
+                output.textContent = '❌ ERROR: ' + error.message;
+                console.error(error);
+            }
+        }
+
+        // Demo 2: Custom Message
+        async function runCustomDemo() {
+            const message = document.getElementById('customMessage').value;
+            const password = document.getElementById('customPassword').value;
+            const output = document.getElementById('demo2Output');
+            const canvas = document.getElementById('demo2Canvas');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const testBtn = document.getElementById('testDemo2Btn');
+
+            if (!message || !password) {
+                alert('Please enter both message and password');
+                return;
+            }
+
+            output.style.display = 'block';
+            output.className = 'output';
+            output.textContent = 'Encrypting...';
+
+            try {
+                const startTime = performance.now();
+
+                demo2Container = await ImageCryptoContainer.encryptToImage(
+                    message,
+                    password,
+                    { width: 512, height: 512 }
+                );
+
+                const endTime = performance.now();
+
+                // Display
+                canvas.width = 512;
+                canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(demo2Container.canvas, 0, 0);
+                canvas.style.display = 'block';
+                downloadBtn.style.display = 'inline-block';
+                testBtn.style.display = 'inline-block';
+
+                output.className = 'output success';
+                output.textContent = '✅ SUCCESS!\n\n';
+                output.textContent += 'Message encrypted and embedded into 512×512 image.\n';
+                output.textContent += 'Time: ' + (endTime - startTime).toFixed(2) + ' ms\n';
+                output.textContent += 'Image size: ' + (demo2Container.blob.size / 1024).toFixed(2) + ' KB\n';
+                output.textContent += '\nYou can download this image and decrypt it later.';
+
+            } catch (error) {
+                output.className = 'output';
+                output.textContent = '❌ ERROR: ' + error.message;
+                console.error(error);
+            }
+        }
+
+        function downloadCustomImage() {
+            if (!demo2Container) {
+                alert('No image to download. Please encrypt a message first.');
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = 'encrypted_' + Date.now() + '.png';
+            link.href = demo2Container.dataURL;
+            link.click();
+        }
+
+        // Demo 3: Decrypt from File
+        async function runDecryptDemo() {
+            const fileInput = document.getElementById('fileInput');
+            const password = document.getElementById('decryptPassword').value;
+            const output = document.getElementById('demo3Output');
+
+            if (!fileInput.files.length) {
+                alert('Please select an image file');
+                return;
+            }
+
+            if (!password) {
+                alert('Please enter the password');
+                return;
+            }
+
+            output.style.display = 'block';
+            output.className = 'output';
+            output.textContent = 'Decrypting...';
+
+            try {
+                const startTime = performance.now();
+
+                const result = await ImageCryptoContainer.decryptFromImage(
+                    fileInput.files[0],
+                    password
+                );
+
+                const endTime = performance.now();
+
+                if (result.success) {
+                    output.className = 'output success';
+                    output.textContent = '✅ DECRYPTION SUCCESS!\n\n';
+                    output.textContent += 'Time: ' + (endTime - startTime).toFixed(2) + ' ms\n\n';
+                    output.textContent += 'Decrypted Message:\n';
+                    output.textContent += '─────────────────────\n';
+                    output.textContent += result.plaintext;
+                } else {
+                    output.className = 'output';
+                    output.textContent = '❌ DECRYPTION FAILED\n\n';
+                    output.textContent += 'Error: ' + result.error + '\n\n';
+                    output.textContent += 'Possible causes:\n';
+                    output.textContent += '• Wrong password\n';
+                    output.textContent += '• Corrupted image\n';
+                    output.textContent += '• Not an encrypted container';
+                }
+
+            } catch (error) {
+                output.className = 'output';
+                output.textContent = '❌ ERROR: ' + error.message;
+                console.error(error);
+            }
+        }
+
+        // Test with Demo 2 Image
+        async function testWithDemo2Image() {
+            if (!demo2Container) {
+                alert('Please run Demo 2 first to generate an image');
+                return;
+            }
+
+            const password = document.getElementById('decryptPassword').value;
+            const output = document.getElementById('demo3Output');
+
+            if (!password) {
+                alert('Please enter the password');
+                return;
+            }
+
+            output.style.display = 'block';
+            output.className = 'output';
+            output.textContent = 'Testing with Demo 2 image...';
+
+            try {
+                const result = await ImageCryptoContainer.decryptFromImage(
+                    demo2Container.canvas,
+                    password
+                );
+
+                if (result.success) {
+                    output.className = 'output success';
+                    output.textContent = '✅ TEST SUCCESS!\n\n';
+                    output.textContent += 'Successfully decrypted Demo 2 image.\n\n';
+                    output.textContent += 'Decrypted Message:\n';
+                    output.textContent += '─────────────────────\n';
+                    output.textContent += result.plaintext;
+                } else {
+                    output.className = 'output';
+                    output.textContent = '❌ TEST FAILED: ' + result.error;
+                }
+
+            } catch (error) {
+                output.className = 'output';
+                output.textContent = '❌ ERROR: ' + error.message;
+                console.error(error);
+            }
+        }
+
+        // Check if libraries loaded
+        window.addEventListener('load', () => {
+            if (typeof ImageCryptoContainer === 'undefined') {
+                alert('ERROR: ImageCryptoContainer not loaded. Make sure js/ImageCryptoContainer.js exists.');
+            } else if (typeof BLAK512Core === 'undefined') {
+                alert('ERROR: BLAK512Core not loaded. Make sure js/BLA512Core.js exists.');
+            } else {
+                console.log('✅ Image Crypto Container Demo Ready');
+                console.log('Config:', ImageCryptoContainer.CONFIG);
+            }
+        });
+    </script>
+</body>
+</html>

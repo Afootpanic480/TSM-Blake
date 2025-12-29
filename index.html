@@ -3668,6 +3668,9 @@ document.addEventListener('keydown', (event) => {
 
     if (!shortcutsEnabled) return;
     
+    // Check if event.key exists (may be undefined in some browsers/situations)
+    if (!event.key) return;
+    
     const isCtrl = event.ctrlKey || event.metaKey;
     const key = event.key.toUpperCase();
 
