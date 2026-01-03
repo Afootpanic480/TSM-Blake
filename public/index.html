@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Security Demo: Risk-Based Auth (Firebase)</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>">
     <style>
       body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; }
       input, button { font-size: 16px; padding: 10px 12px; }
@@ -21,20 +22,22 @@
       Password hashing and allow/deny decisions happen server-side.
     </p>
 
-    <label>
-      Username
-      <input id="username" autocomplete="username" placeholder="demo" />
-    </label>
+    <form id="authForm">
+      <label>
+        Username
+        <input id="username" autocomplete="username" placeholder="demo" />
+      </label>
 
-    <label>
-      Password
-      <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" />
-    </label>
+      <label>
+        Password
+        <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" />
+      </label>
 
-    <div class="row" style="margin-top: 14px;">
-      <button id="btnAuth">Authenticate (server decides)</button>
-      <button id="btnReset" type="button">Reset signals</button>
-    </div>
+      <div class="row" style="margin-top: 14px;">
+        <button id="btnAuth" type="button">Authenticate (server decides)</button>
+        <button id="btnReset" type="button">Reset signals</button>
+      </div>
+    </form>
 
     <h3>Status</h3>
     <pre id="out">Loading…</pre>
