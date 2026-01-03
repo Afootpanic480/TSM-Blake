@@ -61,12 +61,13 @@ function isAllowedOrigin(origin) {
   const explicit = parseAllowedOrigins();
   if (explicit.length > 0) return explicit.includes(origin);
 
-  // Demo default: allow Firebase Hosting domains and local emulator hosting.
+  // Demo default: allow Firebase Hosting domains, custom domain, and local emulator hosting.
   // NOTE: This is for the demo only. Production should use an explicit allow-list.
   if (origin.startsWith('http://localhost:')) return true;
   if (origin.startsWith('http://127.0.0.1:')) return true;
   if (origin.endsWith('.web.app')) return true;
   if (origin.endsWith('.firebaseapp.com')) return true;
+  if (origin === 'https://tsm.ssnetwork.site') return true;
 
   return false;
 }
