@@ -1,0 +1,23 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "auditLogs": {
+      ".read": false,
+      ".write": false
+    },
+
+    "context": {
+      ".read": false,
+      ".write": false
+    },
+
+    "users": {
+      "$username": {
+        ".read": false,
+        ".write": false
+      }
+    }
+  }
+}

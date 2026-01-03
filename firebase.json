@@ -1,0 +1,28 @@
+{
+  "functions": [
+    {
+      "source": "functions"
+    }
+  ],
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      { "source": "/issueContext", "function": "issueContext" },
+      { "source": "/authWithRisk", "function": "authWithRisk" },
+      { "source": "/seedDemoUser", "function": "seedDemoUser" }
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          { "key": "Cache-Control", "value": "no-store" }
+        ]
+      }
+    ]
+  }
+}
