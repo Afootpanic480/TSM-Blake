@@ -27,6 +27,11 @@ Demonstrates:
 
 If you host the static site on a non-Firebase domain (e.g. GitHub Pages / custom domain):
 
+GitHub Pages expects an `index.html` at the publishing root. This repo includes one at:
+- `index.html` (for GitHub Pages when publishing from repo root)
+- `docs/index.html` (for GitHub Pages when publishing from /docs)
+- `public/index.html` (for Firebase Hosting)
+
 1) Add your domain to Firebase Auth:
   - Firebase Console → Authentication → Settings → Authorized domains
   - Add `tsm.ssnetwork.site` (and `www.tsm.ssnetwork.site` if you use it)
@@ -40,6 +45,12 @@ firebase deploy --only functions
 
 3) Ensure the frontend calls the backend using an absolute URL:
   - See `API_BASE_URL` in [public/app.js](public/app.js)
+
+### GitHub Pages settings
+
+- Repo → Settings → Pages
+- Source: `Deploy from a branch`
+- Branch: `main` (or `master`) and folder `/docs`
 
 ## Seeding a demo user (optional helper)
 
